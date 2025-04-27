@@ -17,11 +17,7 @@ export default function AdUnit({ size, className = "" }: AdUnitProps) {
     sidebar: { width: 160, height: 400, label: "Sidebar Ad" }, // New size that fits within viewport height
   }
 
-  const { width, height, label } = dimensions[size]
-
-  // Generate a random color for the ad background
-  const colors = ["#FFD8A9", "#D7E3FC", "#E3F2C1", "#F7C8E0", "#B9E0FF", "#DAEAF1"]
-  const randomColor = colors[Math.floor(Math.random() * colors.length)]
+  const { label } = dimensions[size]
 
   return (
     <div className={`ad-container relative ${className}`}>
