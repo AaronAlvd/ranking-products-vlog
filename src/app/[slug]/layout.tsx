@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation"
 import { getArticleBySlug } from "@/lib/data"
 import type React from "react"
-import Head from "next/head"
 import AdUnit from "@/components/AdUnit"
 
 export default function ArticleLayout({
@@ -24,7 +23,7 @@ export default function ArticleLayout({
   return (
     <>
       {/* Traditional HTML metadata tags */}
-      <Head>
+      <head>
         <title>{article.seo.titleTag}</title>
         <meta name="description" content={article.seo.metaDescription} />
         <meta name="keywords" content={article.seo.keywords.join(", ")} />
@@ -52,7 +51,7 @@ export default function ArticleLayout({
 
         {/* Canonical URL */}
         <link rel="canonical" href={`https://ranking-products-vlog.vercel.app/${article.slug}`} />
-      </Head>
+      </head>
 
       <div className="w-full px-4 py-8">
         {/* Three-column layout with side ads */}

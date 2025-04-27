@@ -1,7 +1,6 @@
 import "./globals.css"
 
 import type React from "react"
-import Head from "next/head"
 import Footer from "@/components/Footer"
 import Header from "@/components/Header"
 
@@ -19,13 +18,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <Head>
+      <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* <meta name="viewport" content="width=device-width, initial-scale=1" /> */}
         
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />
-      </Head>
+      </head>
       <body className={inter.className}>
         <SpeedInsights />
         <Analytics />
