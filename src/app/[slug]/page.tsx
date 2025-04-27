@@ -157,7 +157,7 @@ export default function ArticlePage() {
                     <div className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center font-bold text-xl mr-3">
                       {product.rank}
                     </div>
-                    <h3 className="text-xl md:text-2xl font-bold">{product.name}</h3>
+                    <p className="text-xl md:text-2xl font-bold">{product.name}</p>
                   </div>
                   {product.price && (
                     <div className="bg-white text-green-600 px-4 py-1 rounded-full font-bold">{product.price}</div>
@@ -186,9 +186,9 @@ export default function ArticlePage() {
                       {/* Pros and cons with improved styling */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div className="bg-green-50 p-4 rounded-lg border border-green-100">
-                          <h4 className="font-bold text-green-700 mb-3 flex items-center">
+                          <p className="font-bold text-green-700 mb-3 flex items-center">
                             <Check size={18} className="mr-2" /> Pros
-                          </h4>
+                          </p>
                           <ul className="space-y-2">
                             {product.pros.map((pro, idx) => (
                               <li key={idx} className="flex items-start">
@@ -200,9 +200,9 @@ export default function ArticlePage() {
                         </div>
 
                         <div className="bg-red-50 p-4 rounded-lg border border-red-100">
-                          <h4 className="font-bold text-red-700 mb-3 flex items-center">
+                          <p className="font-bold text-red-700 mb-3 flex items-center">
                             <X size={18} className="mr-2" /> Cons
-                          </h4>
+                          </p>
                           <ul className="space-y-2">
                             {product.cons.map((con, idx) => (
                               <li key={idx} className="flex items-start">
@@ -264,7 +264,7 @@ export default function ArticlePage() {
 
       {/* Conclusion with improved styling */}
       <section className="mb-12">
-        <h2 className="text-3xl font-bold mb-6 text-gray-900">Conclusion</h2>
+        <p className="text-3xl font-bold mb-6 text-gray-900">Conclusion</p>
         <div className="bg-gray-50 p-6 rounded-lg border-l-4 border-blue-500">
           <div className="prose max-w-none text-lg leading-relaxed text-gray-700">
             <p>{article.conclusion}</p>
@@ -277,7 +277,7 @@ export default function ArticlePage() {
 
       {/* Bottom sharing section */}
       <section className="mb-12 bg-gray-50 border border-gray-200 rounded-lg p-6">
-        <h2 className="text-xl font-bold mb-4 text-center">Share This Article</h2>
+        <p className="text-xl font-bold mb-4 text-center">Share This Article</p>
         <p className="text-gray-600 text-center mb-4">
           If you found this article helpful, please share it with your friends and followers!
         </p>
