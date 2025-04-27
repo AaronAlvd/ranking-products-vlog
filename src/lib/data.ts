@@ -109,7 +109,7 @@ const articles: Article[] = [
     conclusion:
       "The landscape for gaming laptops in 2025 has never been more competitive, and there truly is a machine for every type of gamer. For elite performance seekers who want the very best and are willing to invest, the RazerBlade Pro X remains the unrivaled champion. If you're a mobile gamer or a student who needs a lighter machine without sacrificing too much firepower, the ASUS ROG Zephyrus G16 offers a nearly perfect middle ground. Finally, for those who crave an uncompromising gaming and multimedia experience on a giant screen, the Alienware m18 R2 is the undisputed king. No matter your choice, gaming in 2025 is more exciting, portable, and visually stunning than ever before. Choose wisely, and you’ll have a machine that can handle not just today's games, but tomorrow’s innovations too.",
     seo: {
-      titleTag: "Top Gaming Laptops of 2025 | Best Picks for Performance, Portability & Value",
+      titleTag: "Top Gaming Laptops 2025 | Best Picks Reviewed",
       metaDescription:
         "Discover the best gaming laptops of 2025 with our expert reviews. Find top machines for performance, portability, and next-gen gaming experiences.",
       keywords: [
