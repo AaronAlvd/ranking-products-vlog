@@ -50,7 +50,7 @@ export default function ArticleLayout({
         ))}
 
         {/* Canonical URL */}
-        <link rel="canonical" href={`https://productranking.com/${article.slug}`} />
+        <link rel="canonical" href={`https://ranking-products-vlog.vercel.app/${article.slug}`} />
       </head>
 
       <div className="w-full px-4 py-8">
