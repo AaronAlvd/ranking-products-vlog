@@ -28,6 +28,11 @@ export default function ArticleLayout({
         <meta name="description" content={article.seo.metaDescription} />
         <meta name="keywords" content={article.seo.keywords.join(", ")} />
 
+        {/* Apple Web App Meta Tags */}
+        <meta name="apple-mobile-web-app-title" content="Product Rankings"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
         {/* Open Graph tags */}
         <meta property="og:title" content={article.seo.titleTag} />
         <meta property="og:description" content={article.seo.metaDescription} />
