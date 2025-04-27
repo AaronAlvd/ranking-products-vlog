@@ -9,6 +9,9 @@ import { getArticleBySlug } from "@/lib/data"
 import { formatDate } from "@/lib/utils"
 import AdUnit from "@/components/AdUnit"
 import { ArrowLeft, Star, Check, X, ExternalLink, Calendar, Clock, RefreshCw } from "lucide-react"
+import SocialShareButtons from "@/components/SocialShareButtons"
+import FloatingSocialShare from "@/components/FloatingSocialShare"
+import ProductShareButton from "@/components/ProductShareButton"
 
 export default function ArticlePage() {
   const pathname = usePathname();
@@ -32,8 +35,19 @@ export default function ArticlePage() {
 
   const readingTime = Math.ceil(wordCount / 200) // Assuming 200 words per minute
 
+  // Article URL for sharing
+  const articleUrl = `/${article.slug}`
+
   return (
     <article className="relative">
+      {/* Floating social share buttons (desktop only) */}
+      <FloatingSocialShare
+        url={articleUrl}
+        title={article.title}
+        description={article.intro.substring(0, 150) + "..."}
+        image={article.coverImageUrl}
+      />
+
       {/* Back button with improved styling */}
       <Link
         href="/"
@@ -67,6 +81,17 @@ export default function ArticlePage() {
               <span>Updated: {formatDate(article.updatedDate)}</span>
             </div>
           )}
+        </div>
+
+        {/* Social sharing section at the top */}
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+          <SocialShareButtons
+            url={articleUrl}
+            title={article.title}
+            description={article.intro.substring(0, 150) + "..."}
+            image={article.coverImageUrl}
+            className="justify-center md:justify-start"
+          />
         </div>
 
         {/* Hero image with overlay gradient */}
@@ -110,14 +135,17 @@ export default function ArticlePage() {
         <div className="space-y-16">
           {article.products.map((product, index) => (
             <React.Fragment key={product.name}>
-              <div className="bg-white rounded-xl overflow-hidden shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300">
+              <div
+                id={product.name.toLowerCase().replace(/\s+/g, "-")}
+                className="bg-white rounded-xl overflow-hidden shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300"
+              >
                 {/* Product header with rank */}
                 <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 flex justify-between items-center">
                   <div className="flex items-center">
                     <div className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center font-bold text-xl mr-3">
                       {product.rank}
                     </div>
-                    <p className="text-xl md:text-2xl font-bold">{product.name}</p>
+                    <h3 className="text-xl md:text-2xl font-bold">{product.name}</h3>
                   </div>
                   {product.price && (
                     <div className="bg-white text-green-600 px-4 py-1 rounded-full font-bold">{product.price}</div>
@@ -146,9 +174,9 @@ export default function ArticlePage() {
                       {/* Pros and cons with improved styling */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div className="bg-green-50 p-4 rounded-lg border border-green-100">
-                          <p className="font-bold text-green-700 mb-3 flex items-center">
+                          <h4 className="font-bold text-green-700 mb-3 flex items-center">
                             <Check size={18} className="mr-2" /> Pros
-                          </p>
+                          </h4>
                           <ul className="space-y-2">
                             {product.pros.map((pro, idx) => (
                               <li key={idx} className="flex items-start">
@@ -160,9 +188,9 @@ export default function ArticlePage() {
                         </div>
 
                         <div className="bg-red-50 p-4 rounded-lg border border-red-100">
-                          <p className="font-bold text-red-700 mb-3 flex items-center">
+                          <h4 className="font-bold text-red-700 mb-3 flex items-center">
                             <X size={18} className="mr-2" /> Cons
-                          </p>
+                          </h4>
                           <ul className="space-y-2">
                             {product.cons.map((con, idx) => (
                               <li key={idx} className="flex items-start">
@@ -174,9 +202,9 @@ export default function ArticlePage() {
                         </div>
                       </div>
 
-                      {/* Call to action button */}
-                      {product.productUrl && (
-                        <div className="mt-6">
+                      {/* Action buttons with share */}
+                      <div className="mt-6 flex flex-wrap gap-3 items-center">
+                        {product.productUrl && (
                           <a
                             href={product.productUrl}
                             target="_blank"
@@ -186,8 +214,16 @@ export default function ArticlePage() {
                             Check Price
                             <ExternalLink size={16} className="ml-2" />
                           </a>
-                        </div>
-                      )}
+                        )}
+
+                        {/* Product share button */}
+                        <ProductShareButton
+                          url={articleUrl}
+                          title={article.title}
+                          productName={product.name}
+                          image={product.imageUrl}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -211,12 +247,28 @@ export default function ArticlePage() {
 
       {/* Conclusion with improved styling */}
       <section className="mb-12">
-        <p className="text-3xl font-bold mb-6 text-gray-900">Conclusion</p>
+        <h2 className="text-3xl font-bold mb-6 text-gray-900">Conclusion</h2>
         <div className="bg-gray-50 p-6 rounded-lg border-l-4 border-blue-500">
           <div className="prose max-w-none text-lg leading-relaxed text-gray-700">
             <p>{article.conclusion}</p>
           </div>
         </div>
+      </section>
+
+      {/* Bottom sharing section */}
+      <section className="mb-12 bg-gray-50 border border-gray-200 rounded-lg p-6">
+        <h2 className="text-xl font-bold mb-4 text-center">Share This Article</h2>
+        <p className="text-gray-600 text-center mb-4">
+          If you found this article helpful, please share it with your friends and followers!
+        </p>
+        <SocialShareButtons
+          url={articleUrl}
+          title={article.title}
+          description={article.intro.substring(0, 150) + "..."}
+          image={article.coverImageUrl}
+          size="lg"
+          className="justify-center"
+        />
       </section>
 
       {/* Bottom ad - only visible on mobile and tablets */}
