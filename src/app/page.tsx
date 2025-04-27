@@ -1,17 +1,15 @@
 import React from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { useSearchParams } from "next/navigation"
 import { getAllArticles } from "@/lib/data"
 import { filterArticlesByQuery } from "@/lib/search"
 import AdUnit from "@/components/AdUnit"
 
-export default function Home({
-  searchParams,
-}: {
-  searchParams?: { q?: string }
-}) {
+export default function Home() {
+  const searchParams = useSearchParams()
   // Ensure searchParams exists and get the query
-  const query = searchParams?.q || null
+  const query = searchParams.get('q') ?? null
   const allArticles = getAllArticles()
 
   // Apply filtering if there's a query
