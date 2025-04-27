@@ -37,7 +37,7 @@ export type Article = {
 const articles: Article[] = [
   {
     id: "1",
-    title: "Top Gaming Laptops 2025 | Best Performance, Portability & Value",
+    title: "Top Gaming Laptops 2025 | Best Picks Reviewed",
     slug: "top-3-best-gaming-laptops-2025",
     publishedDate: "2025-04-15",
     updatedDate: "2025-04-26",
