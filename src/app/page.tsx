@@ -55,7 +55,7 @@ export default function Home({
               <div className="mb-8">
                 <h1 className="text-3xl font-bold mb-2">Search Results</h1>
                 <p className="text-gray-600">
-                  {articles.length} {articles.length === 1 ? "result" : "results"} found for "{query}"
+                  {articles.length} {articles.length === 1 ? "result" : "results"} found for &qout;{query}&qout;
                 </p>
                 {articles.length === 0 && (
                   <div className="mt-4 p-4 bg-blue-50 border border-blue-100 rounded-lg">
