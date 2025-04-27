@@ -6,122 +6,189 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { notFound } from "next/navigation"
 import { getArticleBySlug } from "@/lib/data"
+import { formatDate } from "@/lib/utils"
 import AdUnit from "@/components/AdUnit"
+import { ArrowLeft, Star, Check, X, ExternalLink, Calendar, Clock, RefreshCw } from "lucide-react"
 
 export default function ArticlePage() {
   const pathname = usePathname();
   const slug = pathname.split("/")[1]
   const article = getArticleBySlug(slug)
-
   if (!article) {
     notFound()
   }
 
+  // Calculate reading time (rough estimate)
+  const wordCount =
+    (article.intro + article.conclusion).split(/\s+/).length +
+    article.products.reduce(
+      (acc, product) =>
+        acc +
+        product.description.split(/\s+/).length +
+        product.pros.join(" ").split(/\s+/).length +
+        product.cons.join(" ").split(/\s+/).length,
+      0,
+    )
+
+  const readingTime = Math.ceil(wordCount / 200) // Assuming 200 words per minute
+
   return (
-    <>
-      <Link href="/" className="inline-block mb-6 text-blue-600 hover:underline">
-        ← Back to all articles
+    <article className="relative">
+      {/* Back button with improved styling */}
+      <Link
+        href="/"
+        className="inline-flex items-center mb-8 text-blue-600 hover:text-blue-800 transition-colors group"
+      >
+        <ArrowLeft size={18} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+        <span className="font-medium">Back to all articles</span>
       </Link>
 
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
-        <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-4">
-          <span>Category: {article.category}</span>
-          <span>Published: {new Date(article.publishedDate).toLocaleDateString()}</span>
-          {article.updatedDate && <span>Updated: {new Date(article.updatedDate).toLocaleDateString()}</span>}
+      {/* Article header with improved styling */}
+      <header className="mb-10">
+        <div className="flex flex-wrap gap-3 mb-4">
+          <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+            {article.category}
+          </span>
+          <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium flex items-center">
+            <Clock size={14} className="mr-1" /> {readingTime} min read
+          </span>
         </div>
 
-        {/* Top ad - only visible on mobile and tablets */}
-        <div className="my-6 lg:hidden">
-          <AdUnit size="leaderboard" />
+        <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight text-gray-900">{article.title}</h1>
+
+        <div className="flex flex-wrap items-center text-sm text-gray-600 mb-6 gap-4">
+          <div className="flex items-center">
+            <Calendar size={16} className="mr-1" />
+            <span>Published: {formatDate(article.publishedDate)}</span>
+          </div>
+          {article.updatedDate && (
+            <div className="flex items-center">
+              <RefreshCw size={16} className="mr-1" />
+              <span>Updated: {formatDate(article.updatedDate)}</span>
+            </div>
+          )}
         </div>
 
+        {/* Hero image with overlay gradient */}
         {article.coverImageUrl && (
-          <div className="relative w-full h-64 md:h-96 mb-6">
+          <div className="relative w-full h-72 md:h-96 mb-8 rounded-xl overflow-hidden">
             <Image
               src={article.coverImageUrl || "/placeholder.svg"}
               alt={article.title}
               fill
-              className="object-cover rounded-lg"
+              className="object-cover"
               priority
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
           </div>
         )}
 
-        <div className="prose max-w-none mb-8">
-          <p className="text-lg">{article.intro}</p>
+        {/* Introduction with improved styling */}
+        <div className="prose max-w-none text-lg leading-relaxed text-gray-700 mb-10 bg-gray-50 p-6 rounded-lg border-l-4 border-blue-500">
+          <p>{article.intro}</p>
         </div>
       </header>
 
-      {/* Ad after intro - only visible on mobile and tablets */}
-      <div className="my-8 flex justify-center lg:hidden">
+      {/* Mobile ad - only visible on mobile and tablets */}
+      <div className="my-8 lg:hidden">
         <AdUnit size="rectangle" />
       </div>
 
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold mb-6">
-          Top {article.products.length} {article.category}
-        </h2>
+      {/* Products section with improved styling */}
+      <section className="mb-16">
+        <div className="flex items-center mb-8">
+          <h2 className="text-3xl font-bold text-gray-900">
+            Top {article.products.length} {article.category}
+          </h2>
+          <div className="ml-4 flex">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} size={20} className={`${i < 4 ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} />
+            ))}
+          </div>
+        </div>
 
-        <div className="space-y-12">
+        <div className="space-y-16">
           {article.products.map((product, index) => (
             <React.Fragment key={product.name}>
-              <div className="border border-gray-200 rounded-lg p-6">
-                <div className="flex flex-col md:flex-row gap-6">
-                  {product.imageUrl && (
-                    <div className="relative w-full md:w-1/3 h-64">
-                      <Image
-                        src={product.imageUrl || "/placeholder.svg"}
-                        alt={product.name}
-                        fill
-                        className="object-contain"
-                      />
+              <div className="bg-white rounded-xl overflow-hidden shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300">
+                {/* Product header with rank */}
+                <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 flex justify-between items-center">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center font-bold text-xl mr-3">
+                      {product.rank}
                     </div>
+                    <h3 className="text-xl md:text-2xl font-bold">{product.name}</h3>
+                  </div>
+                  {product.price && (
+                    <div className="bg-white text-green-600 px-4 py-1 rounded-full font-bold">{product.price}</div>
                   )}
+                </div>
 
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="text-xl font-bold">
-                        <span className="inline-block bg-blue-600 text-white w-8 h-8 rounded-full text-center leading-8 mr-2">
-                          {product.rank}
-                        </span>
-                        {product.name}
-                      </h3>
-                      {product.price && <span className="text-lg font-semibold text-green-600">{product.price}</span>}
-                    </div>
-
-                    <p className="mb-4">{product.description}</p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <h4 className="font-semibold text-green-600 mb-2">Pros</h4>
-                        <ul className="list-disc pl-5 space-y-1">
-                          {product.pros.map((pro, index) => (
-                            <li key={index}>{pro}</li>
-                          ))}
-                        </ul>
+                <div className="p-6">
+                  {/* Product content with larger image */}
+                  <div className="grid grid-cols-1 gap-8">
+                    {/* Product image - now much larger */}
+                    {product.imageUrl && (
+                      <div className="relative w-full h-[300px] md:h-[400px] bg-gray-50 rounded-lg overflow-hidden border border-gray-100">
+                        <Image
+                          src={product.imageUrl || "/placeholder.svg"}
+                          alt={product.name}
+                          fill
+                          className="object-contain"
+                        />
                       </div>
-
-                      <div>
-                        <h4 className="font-semibold text-red-600 mb-2">Cons</h4>
-                        <ul className="list-disc pl-5 space-y-1">
-                          {product.cons.map((con, index) => (
-                            <li key={index}>{con}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-
-                    {product.productUrl && (
-                      <a
-                        href={product.productUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                      >
-                        Check Price
-                      </a>
                     )}
+
+                    {/* Product description */}
+                    <div>
+                      <p className="text-gray-700 mb-6 leading-relaxed text-lg">{product.description}</p>
+
+                      {/* Pros and cons with improved styling */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div className="bg-green-50 p-4 rounded-lg border border-green-100">
+                          <h4 className="font-bold text-green-700 mb-3 flex items-center">
+                            <Check size={18} className="mr-2" /> Pros
+                          </h4>
+                          <ul className="space-y-2">
+                            {product.pros.map((pro, idx) => (
+                              <li key={idx} className="flex items-start">
+                                <Check size={16} className="text-green-500 mt-1 mr-2 flex-shrink-0" />
+                                <span className="text-gray-700">{pro}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div className="bg-red-50 p-4 rounded-lg border border-red-100">
+                          <h4 className="font-bold text-red-700 mb-3 flex items-center">
+                            <X size={18} className="mr-2" /> Cons
+                          </h4>
+                          <ul className="space-y-2">
+                            {product.cons.map((con, idx) => (
+                              <li key={idx} className="flex items-start">
+                                <X size={16} className="text-red-500 mt-1 mr-2 flex-shrink-0" />
+                                <span className="text-gray-700">{con}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+
+                      {/* Call to action button */}
+                      {product.productUrl && (
+                        <div className="mt-6">
+                          <a
+                            href={product.productUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                          >
+                            Check Price
+                            <ExternalLink size={16} className="ml-2" />
+                          </a>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -138,14 +205,17 @@ export default function ArticlePage() {
       </section>
 
       {/* Ad before conclusion - only visible on mobile and tablets */}
-      <div className="mb-8 flex justify-center lg:hidden">
+      <div className="mb-10 lg:hidden">
         <AdUnit size="rectangle" />
       </div>
 
-      <section className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Conclusion</h2>
-        <div className="prose max-w-none">
-          <p>{article.conclusion}</p>
+      {/* Conclusion with improved styling */}
+      <section className="mb-12">
+        <h2 className="text-3xl font-bold mb-6 text-gray-900">Conclusion</h2>
+        <div className="bg-gray-50 p-6 rounded-lg border-l-4 border-blue-500">
+          <div className="prose max-w-none text-lg leading-relaxed text-gray-700">
+            <p>{article.conclusion}</p>
+          </div>
         </div>
       </section>
 
@@ -153,6 +223,6 @@ export default function ArticlePage() {
       <div className="mt-12 mb-4 lg:hidden">
         <AdUnit size="leaderboard" />
       </div>
-    </>
+    </article>
   )
 }

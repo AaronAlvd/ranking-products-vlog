@@ -37,7 +37,7 @@ export type Article = {
 const articles: Article[] = [
   {
     id: "1",
-    title: "Top 3 Gaming Laptops of 2025: Unbeatable Power, Displays, and Portability",
+    title: "Top Gaming Laptops 2025 | Best Performance, Portability & Value",
     slug: "top-3-best-gaming-laptops-2025",
     publishedDate: "2025-04-15",
     updatedDate: "2025-04-26",
@@ -111,7 +111,7 @@ const articles: Article[] = [
     seo: {
       titleTag: "Top Gaming Laptops of 2025 | Best Picks for Performance, Portability & Value",
       metaDescription:
-        "Explore the top-rated gaming laptops of 2025! Detailed reviews and rankings for the best gaming machines combining performance, portability, and cutting-edge tech.",
+        "Discover the best gaming laptops of 2025 with our expert reviews. Find top machines for performance, portability, and next-gen gaming experiences.",
       keywords: [
         "best gaming laptops 2025",
         "top gaming laptops",
