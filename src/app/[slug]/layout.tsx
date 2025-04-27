@@ -1,16 +1,19 @@
+"use client"
+
+import { usePathname } from "next/navigation"
 import type React from "react"
 import { getArticleBySlug } from "@/lib/data"
 import AdUnit from "@/components/AdUnit"
 
 export default function ArticleLayout({
-  children,
-  params,
+  children
 }: {
   children: React.ReactNode
-  params: { slug: string }
 }) {
+  const pathname = usePathname();
+  const slug = pathname.split("/")[1]
   // Get article data for metadata
-  const article = getArticleBySlug(params.slug)
+  const article = getArticleBySlug(slug)
 
   // If article doesn't exist, just render children (which will handle the 404)
   if (!article) {
