@@ -40,25 +40,114 @@ export function searchArticles(articles: Article[], query: string): Article[] {
 
   if (searchTerms.length === 0) return []
 
-  return articles.filter((article) => {
-    // Check if any search term is in the title, intro, conclusion, or category
-    const titleMatch = searchTerms.some((term) => article.title.toLowerCase().includes(term))
-    const introMatch = searchTerms.some((term) => article.intro.toLowerCase().includes(term))
-    const conclusionMatch = searchTerms.some((term) => article.conclusion.toLowerCase().includes(term))
-    const categoryMatch = searchTerms.some((term) => article.category.toLowerCase().includes(term))
+  return articles
+    .map((article) => {
+      let score = 0
+      const title = article.title.toLowerCase()
 
-    // Check if any search term is in product names or descriptions
-    const productMatch = article.products.some((product) =>
-      searchTerms.some(
-        (term) => product.name.toLowerCase().includes(term) || product.description.toLowerCase().includes(term),
-      ),
-    )
+      // Title exact match (highest priority)
+      if (title === query.toLowerCase()) {
+        score += 100
+      }
 
-    // Check if any search term is in SEO keywords
-    const keywordMatch = searchTerms.some((term) =>
-      article.seo.keywords.some((keyword) => keyword.toLowerCase().includes(term)),
-    )
+      // Title starts with query
+      if (title.startsWith(query.toLowerCase())) {
+        score += 50
+      }
 
-    return titleMatch || introMatch || conclusionMatch || categoryMatch || productMatch || keywordMatch
-  })
+      // Individual terms in title
+      searchTerms.forEach((term) => {
+        // Full term appears in title
+        if (title.includes(term)) {
+          score += 30
+        }
+
+        // Check for partial matches in title (minimum 3 characters)
+        if (term.length >= 3 && title.split(" ").some((word) => word.includes(term))) {
+          score += 15
+        }
+
+        // Term appears in category
+        if (article.category.toLowerCase().includes(term)) {
+          score += 10
+        }
+
+        // Term appears in product names
+        article.products.forEach((product) => {
+          if (product.name.toLowerCase().includes(term)) {
+            score += 5
+          }
+        })
+
+        // Term appears in intro
+        if (article.intro.toLowerCase().includes(term)) {
+          score += 3
+        }
+      })
+
+      return { article, score }
+    })
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map((item) => item.article)
+}
+
+// Find related articles based on category and keywords
+export function findRelatedArticles(currentArticle: Article, allArticles: Article[], limit = 3): Article[] {
+  // Don't include the current article in results
+  const otherArticles = allArticles.filter((article) => article.id !== currentArticle.id)
+
+  if (otherArticles.length === 0) return []
+
+  return otherArticles
+    .map((article) => {
+      let score = 0
+
+      // Same category is a strong signal
+      if (article.category === currentArticle.category) {
+        score += 50
+      }
+
+      // Check for keyword overlap in titles
+      const currentTitleWords = currentArticle.title.toLowerCase().split(/\s+/)
+      const articleTitleWords = article.title.toLowerCase().split(/\s+/)
+
+      currentTitleWords.forEach((word) => {
+        if (word.length > 3 && articleTitleWords.includes(word)) {
+          score += 10
+        }
+      })
+
+      // Check for product name overlap
+      currentArticle.products.forEach((currentProduct) => {
+        article.products.forEach((product) => {
+          if (
+            currentProduct.name.toLowerCase().includes(product.name.toLowerCase()) ||
+            product.name.toLowerCase().includes(currentProduct.name.toLowerCase())
+          ) {
+            score += 15
+          }
+        })
+      })
+
+      // Check for keyword overlap in SEO keywords
+      currentArticle.seo.keywords.forEach((keyword) => {
+        if (article.seo.keywords.includes(keyword)) {
+          score += 5
+        }
+      })
+
+      return { article, score }
+    })
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((item) => item.article)
+}
+
+// Get popular articles (in a real app, this would be based on view counts or other metrics)
+export function getPopularArticles(allArticles: Article[], limit = 5): Article[] {
+  // For demo purposes, we'll just return the first few articles
+  // In a real app, you would sort by view count or other popularity metrics
+  return allArticles.slice(0, limit)
 }

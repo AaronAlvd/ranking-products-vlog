@@ -27,12 +27,6 @@ export default function AdUnit({ size, className = "" }: AdUnitProps) {
     <div className={`ad-container relative ${className}`}>
       <div
         className="ad-unit relative overflow-hidden border border-gray-200 rounded-lg flex items-center justify-center"
-        style={{
-          width: "100%",
-          height: "auto",
-          aspectRatio: `${width}/${height}`,
-          backgroundColor: randomColor,
-        }}
       >
         <div className="absolute top-0 left-0 bg-gray-100 text-xs text-gray-500 px-2 py-1 rounded-br-lg">
           Advertisement

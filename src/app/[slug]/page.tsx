@@ -3,23 +3,35 @@
 import React from "react"
 import Image from "next/image"
 import Link from "next/link"
+
 import { usePathname } from "next/navigation"
 import { notFound } from "next/navigation"
-import { getArticleBySlug } from "@/lib/data"
-import { formatDate } from "@/lib/utils"
+import { getArticleBySlug, getAllArticles } from "@/lib/data"
+import { formatDate, findRelatedArticles } from "@/lib/utils"
 import AdUnit from "@/components/AdUnit"
 import { ArrowLeft, Star, Check, X, ExternalLink, Calendar, Clock, RefreshCw } from "lucide-react"
 import SocialShareButtons from "@/components/SocialShareButtons"
-import FloatingSocialShare from "@/components/FloatingSocialShare"
 import ProductShareButton from "@/components/ProductShareButton"
+import RelatedArticles from "@/components/RelatedArticles"
+import InContentLinks from "@/components/InContentLinks"
 
 export default function ArticlePage() {
   const pathname = usePathname();
   const slug = pathname.split("/")[1]
   const article = getArticleBySlug(slug)
+
   if (!article) {
     notFound()
   }
+
+  // Get all articles for related content
+  const allArticles = getAllArticles()
+
+  // Find related articles
+  const relatedArticles = findRelatedArticles(article, allArticles, 3)
+
+  // Find articles in the same category
+  const categoryArticles = allArticles.filter((a) => a.id !== article.id && a.category === article.category).slice(0, 2)
 
   // Calculate reading time (rough estimate)
   const wordCount =
@@ -36,18 +48,10 @@ export default function ArticlePage() {
   const readingTime = Math.ceil(wordCount / 200) // Assuming 200 words per minute
 
   // Article URL for sharing
-  const articleUrl = `/${article.slug}`
+  const articleUrl = `https://ranking-products-vlog.vercel.app/${article.slug}`
 
   return (
     <article className="relative">
-      {/* Floating social share buttons (desktop only) */}
-      <FloatingSocialShare
-        url={articleUrl}
-        title={article.title}
-        description={article.intro.substring(0, 150) + "..."}
-        image={article.coverImageUrl}
-      />
-
       {/* Back button with improved styling */}
       <Link
         href="/"
@@ -60,9 +64,12 @@ export default function ArticlePage() {
       {/* Article header with improved styling */}
       <header className="mb-10">
         <div className="flex flex-wrap gap-3 mb-4">
-          <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+          <Link
+            href={`/?category=${article.category}`}
+            className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium hover:bg-blue-200 transition-colors"
+          >
             {article.category}
-          </span>
+          </Link>
           <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium flex items-center">
             <Clock size={14} className="mr-1" /> {readingTime} min read
           </span>
@@ -114,6 +121,11 @@ export default function ArticlePage() {
         </div>
       </header>
 
+      {/* In-content links to category articles */}
+      {categoryArticles.length > 0 && (
+        <InContentLinks articles={categoryArticles} title={`More ${article.category} Articles You Might Like`} />
+      )}
+
       {/* Mobile ad - only visible on mobile and tablets */}
       <div className="my-8 lg:hidden">
         <AdUnit size="rectangle" />
@@ -145,7 +157,7 @@ export default function ArticlePage() {
                     <div className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center font-bold text-xl mr-3">
                       {product.rank}
                     </div>
-                    <p className="text-xl md:text-2xl font-bold">{product.name}</p>
+                    <h3 className="text-xl md:text-2xl font-bold">{product.name}</h3>
                   </div>
                   {product.price && (
                     <div className="bg-white text-green-600 px-4 py-1 rounded-full font-bold">{product.price}</div>
@@ -174,9 +186,9 @@ export default function ArticlePage() {
                       {/* Pros and cons with improved styling */}
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div className="bg-green-50 p-4 rounded-lg border border-green-100">
-                          <p className="font-bold text-green-700 mb-3 flex items-center">
+                          <h4 className="font-bold text-green-700 mb-3 flex items-center">
                             <Check size={18} className="mr-2" /> Pros
-                          </p>
+                          </h4>
                           <ul className="space-y-2">
                             {product.pros.map((pro, idx) => (
                               <li key={idx} className="flex items-start">
@@ -188,9 +200,9 @@ export default function ArticlePage() {
                         </div>
 
                         <div className="bg-red-50 p-4 rounded-lg border border-red-100">
-                          <p className="font-bold text-red-700 mb-3 flex items-center">
+                          <h4 className="font-bold text-red-700 mb-3 flex items-center">
                             <X size={18} className="mr-2" /> Cons
-                          </p>
+                          </h4>
                           <ul className="space-y-2">
                             {product.cons.map((con, idx) => (
                               <li key={idx} className="flex items-start">
@@ -235,6 +247,11 @@ export default function ArticlePage() {
                   <AdUnit size="banner" />
                 </div>
               )}
+
+              {/* Add in-content links after the middle product */}
+              {index === Math.floor(article.products.length / 2) - 1 && relatedArticles.length > 0 && (
+                <InContentLinks articles={relatedArticles.slice(0, 2)} title="You Might Also Be Interested In" />
+              )}
             </React.Fragment>
           ))}
         </div>
@@ -247,7 +264,7 @@ export default function ArticlePage() {
 
       {/* Conclusion with improved styling */}
       <section className="mb-12">
-        <p className="text-3xl font-bold mb-6 text-gray-900">Conclusion</p>
+        <h2 className="text-3xl font-bold mb-6 text-gray-900">Conclusion</h2>
         <div className="bg-gray-50 p-6 rounded-lg border-l-4 border-blue-500">
           <div className="prose max-w-none text-lg leading-relaxed text-gray-700">
             <p>{article.conclusion}</p>
@@ -255,9 +272,12 @@ export default function ArticlePage() {
         </div>
       </section>
 
+      {/* Related Articles Section */}
+      {relatedArticles.length > 0 && <RelatedArticles articles={relatedArticles} title="Related Articles" />}
+
       {/* Bottom sharing section */}
       <section className="mb-12 bg-gray-50 border border-gray-200 rounded-lg p-6">
-        <p className="text-xl font-bold mb-4 text-center">Share This Article</p>
+        <h2 className="text-xl font-bold mb-4 text-center">Share This Article</h2>
         <p className="text-gray-600 text-center mb-4">
           If you found this article helpful, please share it with your friends and followers!
         </p>
